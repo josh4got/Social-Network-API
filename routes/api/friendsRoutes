@@ -1,0 +1,17 @@
+const router = require('express').Router();
+const {
+  getFriends,
+  addFriend,
+  deleteFriend,
+} = require('../../controllers/courseController.js');
+
+// /api/friends
+router.route('/').get(getFriends).post(addFriend);
+
+// /api/friends/:friendId
+router
+  .route('/:friendId')
+  .get(getSingleFriend)
+  .delete(deleteFriend);
+
+module.exports = router;

@@ -1,4 +1,7 @@
-// api/users
+const express = require('express');
+const router = express.Router();
+const User = require('../../models/User');
+const Thought = require('../../models/Thought');
 
 // GET all users
 // GET a single user by its `_id` and populated thought and friend data

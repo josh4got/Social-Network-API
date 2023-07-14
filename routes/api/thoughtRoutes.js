@@ -68,22 +68,23 @@ router.put('/thoughts/:id', ({ params, body }, res) => {
 });
 
 // DELETE to remove a thought by its '_id'
-router.delete('/thoughts/:thoughtId/reactions/:reactionId', (req, res) => {
-  const { thoughtId, reactionId } = req.params;
-  Thought.findOneAndUpdate(
-    { _id: thoughtId },
-    { $pull: { reactions: { _id: reactionId } } },
-    { new: true }
-  )
+router.delete('/thoughts/:thoughtId', (req, res) => {
+  const { thoughtId } = req.params;
+  
+  Thought.findOneAndDelete({ _id: thoughtId })
     .then(dbThoughtData => {
       if (!dbThoughtData) {
         console.log('No thought found with this id!');
         return res.sendStatus(404);
       }
-      if (dbThoughtData.reactions.length === 0) {
-        console.log('No reaction found with this id!');
-      }
-      res.json(dbThoughtData);
+
+      // Delete any reactions associated with the thought
+      const reactionIds = dbThoughtData.reactions.map(reaction => reaction._id);
+      return Reaction.deleteMany({ _id: { $in: reactionIds } })
+        .then(() => {
+          console.log('Thought and reactions deleted successfully');
+          res.json(dbThoughtData);
+        });
     })
     .catch(err => {
       console.log(err);

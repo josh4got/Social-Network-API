@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Thought = require('../../models/Thought');
 const User = require('../../models/User');
 const Reaction = require('../../models/Reaction')
@@ -115,28 +116,30 @@ router.post('/thoughts/:thoughtId/reactions', (req, res) => {
 });
 
 // DELETE to pull and remove a reaction by the reaction's reactionId value
-router.delete('/thoughts/:thoughtId/reactions/:reactionId', (req, res) => {
-  const { thoughtId, reactionId } = req.params;
-  Thought.findOneAndUpdate(
-    { _id: thoughtId },
-    { $pull: { reactions: { _id: reactionId } } },
-    { new: true }
-  )
-    .then(dbThoughtData => {
-      if (!dbThoughtData) {
-        console.log('No thought found with this id!');
-        return res.sendStatus(404);
-      }
-      if (dbThoughtData.reactions.length === 0) {
-        console.log('No reaction found with this id!');
-        return res.json({ message: 'Reaction deleted successfully' });
-      }
-      res.json(dbThoughtData);
-    })
-    .catch(err => {
-      console.log(err);
-      res.sendStatus(400);
-    });
+router.delete('/reactions/:reactionId', async (req, res) => {
+  const { reactionId } = req.params;
+
+  if (!mongoose.isValidObjectId(reactionId)) {
+    return res.status(400).json({ message: 'Invalid reaction ID!' });
+  }
+
+  try {
+    const dbThoughtData = await Thought.findOneAndUpdate(
+      { 'reactions._id': reactionId },
+      { $pull: { reactions: { _id: reactionId } } },
+      { new: true }
+    ).populate('reactions');
+
+    if (!dbThoughtData) {
+      return res.status(404).json({ message: 'No thought found with this reaction ID!' });
+    }
+
+    console.log('Reaction deleted successfully');
+    res.json({ message: 'Reaction deleted successfully' });
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(400);
+  }
 });
 
 module.exports = router;

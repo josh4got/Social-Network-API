@@ -83,7 +83,7 @@ router.delete('/thoughts/:thoughtId', (req, res) => {
       return Reaction.deleteMany({ _id: { $in: reactionIds } })
         .then(() => {
           console.log('Thought and reactions deleted successfully');
-          res.json(dbThoughtData);
+          res.json({ message: 'Thought and reactions deleted' });
         });
     })
     .catch(err => {

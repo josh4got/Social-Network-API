@@ -116,26 +116,27 @@ router.post('/thoughts/:thoughtId/reactions', (req, res) => {
 
 // DELETE to pull and remove a reaction by the reaction's reactionId value
 router.delete('/thoughts/:thoughtId/reactions/:reactionId', (req, res) => {
-    const { thoughtId, reactionId } = req.params;
-    Thought.findOneAndUpdate(
-      { _id: thoughtId },
-      { $pull: { reactions: { reactionId } } },
-      { new: true }
-    )
-      .then(dbThoughtData => {
-        if (!dbThoughtData) {
-          console.log('No thought found with this id!');
-          return res.sendStatus(404);
-        }
-        if (dbThoughtData.reactions.length === 0) {
-          console.log('No reaction found with this id!');
-        }
-        res.json(dbThoughtData);
-      })
-      .catch(err => {
-        console.log(err);
-        res.sendStatus(400);
-      });
+  const { thoughtId, reactionId } = req.params;
+  Thought.findOneAndUpdate(
+    { _id: thoughtId },
+    { $pull: { reactions: { _id: reactionId } } },
+    { new: true }
+  )
+    .then(dbThoughtData => {
+      if (!dbThoughtData) {
+        console.log('No thought found with this id!');
+        return res.sendStatus(404);
+      }
+      if (dbThoughtData.reactions.length === 0) {
+        console.log('No reaction found with this id!');
+        return res.json({ message: 'Reaction deleted successfully' });
+      }
+      res.json(dbThoughtData);
+    })
+    .catch(err => {
+      console.log(err);
+      res.sendStatus(400);
+    });
 });
 
 module.exports = router;

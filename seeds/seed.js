@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const User = require('./path/to/user/model');
-const Thought = require('./path/to/thought/model');
-const Reaction = require('./path/to/reaction/model');
+const User = require('../models/User');
+const Thought = require('../models/Thought');
+const Reaction = require('../models/Reaction');
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost/mydatabase', {
+mongoose.connect('mongodb://localhost/social-network-api', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

@@ -26,19 +26,27 @@ router.get('/thoughts/:id', (req, res) => {
 
 // POST to create a new thought (don't forget to push the created thought's _id to the associated user's thoughts array field)
 router.post('/thoughts', (req, res) => {
-    Thought.create(req.body)
-        .then(dbThoughtData => {
-            return User.findOneAndUpdate(
-                { _id: req.body.userId },
-                { $push: { thoughts: dbThoughtData._id } },
-                { new: true}
-            );
-        })
-        .then(dbThoughtData => res.json(dbThoughtData))
-        .catch(err => {
-            console.log(err);
-            res.sendStatus(400);
-        });
+  let createdThought; // Declare a variable to store the created thought
+
+  Thought.create(req.body)
+    .then(dbThoughtData => {
+      createdThought = dbThoughtData; // Assign the created thought to the variable
+      return User.findOneAndUpdate(
+        { _id: req.body.userId },
+        { $push: { thoughts: dbThoughtData._id } },
+        { new: true }
+      );
+    })
+    .then(dbUserData => {
+      res.json({
+        thought: createdThought, // Use the stored created thought
+        user: dbUserData
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.sendStatus(400);
+    });
 });
 
 // PUT to update a thought by its '_id'

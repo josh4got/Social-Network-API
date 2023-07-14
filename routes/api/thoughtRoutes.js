@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Thought = require('../../models/Thought');
 const User = require('../../models/User');
+const Reaction = require('../../models/Reaction')
 
 // GET to get all thoughts
 router.get('/thoughts', (req, res) => {
@@ -59,25 +60,27 @@ router.put('/thoughts/:id', ({ params, body }, res) => {
 });
 
 // DELETE to remove a thought by its '_id'
-router.delete('/thoughts/:id', (req, res) => {
-    const { id: thoughtId } = req.params;
-    Thought.findOneAndDelete({ _id: thoughtId })
-      .then(dbThoughtData => {
-        if (!dbThoughtData) {
-          console.log('No thought found with this id!');
-          return res.sendStatus(404);
-        }
-        return User.findOneAndUpdate(
-          { _id: dbThoughtData.userId },
-          { $pull: { thoughts: thoughtId } },
-          { new: true }
-        );
-      })
-      .then(() => res.json({ message: 'Thought deleted!' }))
-      .catch(err => {
-        console.log(err);
-        res.sendStatus(400);
-      });
+router.delete('/thoughts/:thoughtId/reactions/:reactionId', (req, res) => {
+  const { thoughtId, reactionId } = req.params;
+  Thought.findOneAndUpdate(
+    { _id: thoughtId },
+    { $pull: { reactions: { _id: reactionId } } },
+    { new: true }
+  )
+    .then(dbThoughtData => {
+      if (!dbThoughtData) {
+        console.log('No thought found with this id!');
+        return res.sendStatus(404);
+      }
+      if (dbThoughtData.reactions.length === 0) {
+        console.log('No reaction found with this id!');
+      }
+      res.json(dbThoughtData);
+    })
+    .catch(err => {
+      console.log(err);
+      res.sendStatus(400);
+    });
 });
 
 // POST to create a reaction stored in a single thought's reactions array field

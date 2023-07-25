@@ -39,7 +39,7 @@ To use the Social Network API, follow these steps:
 
 The application provides API routes for managing users, thoughts, reactions, and friend lists. You can use the available endpoints to create, read, update, and delete data in the social network database. Refer to the API documentation or explore the code to understand the available routes and their functionality.
 
-Feel free to watch the [Walkthrough Video](https://example.com) to see a demonstration of the API's functionality and how to use the various API routes.
+Feel free to watch the [Walkthrough Video](https://drive.google.com/file/d/17ezCFUDeeuc9I66kUplzlpQpEIvIpoIV/view?usp=sharing) to see a demonstration of the API's functionality and how to use the various API routes.
 
 ## Credits
 
